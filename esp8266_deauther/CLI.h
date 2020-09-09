@@ -71,8 +71,8 @@ class CLI {
     private:
         bool enabled = false;
 
-        SimpleList<String>*list;
-        SimpleList<String>*queue;
+        SimpleList<String>* list;
+        SimpleList<String>* queue;
 
         bool delayed            = false;
         uint32_t delayTime      = 0;

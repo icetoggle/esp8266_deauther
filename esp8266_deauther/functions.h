@@ -2,6 +2,7 @@
 #define functions_h
 
 #include "Arduino.h"
+#include <ESP8266WiFi.h>
 #include <FS.h>
 extern "C" {
   #include "user_interface.h"
@@ -275,9 +276,20 @@ void prnt(const uint32_t i) {
     Serial.printf("%u", i);
 }
 
+
+void prnt(const IPAddress ip) {
+    Serial.print(ip);
+}
+
+
 void prntln() {
     Serial.println();
 }
+
+void prntln(const IPAddress ip) {
+    Serial.println(ip);
+}
+
 
 void prntln(const String s) {
     Serial.println(s);
@@ -299,6 +311,7 @@ void prntln(const char* ptr, int len) {
     for (int i = 0; i<len; i++) prnt(ptr[i]);
     prntln();
 }
+
 
 void prntln(const int i) {
     Serial.println((String)i);
