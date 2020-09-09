@@ -1132,7 +1132,7 @@ void CLI::runCommand(String input) {
 
     // stopap
     else if (eqlsCMD(0, CLI_STOPAP)) {
-        stopAP();
+        stopWifi();
     }
 
     // ===== SCREEN ===== //

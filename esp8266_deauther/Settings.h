@@ -65,6 +65,9 @@ class Settings {
         String getLang();
         bool getSerialEcho();
         bool getWebSpiffs();
+		String getToSSid();
+		String getToPassword();
+		bool getIsAp();
 
         void setDeauthsPerTarget(uint16_t deauthsPerTarget);
         void setDeauthReason(uint8_t deauthReason);
@@ -95,6 +98,10 @@ class Settings {
         void setLang(String lang);
         void setSerialEcho(bool serialEcho);
         void setWebSpiffs(bool webSpiffs);
+		void setToSSid(String pssid);
+		void setToPassword(String pPassword);
+		void setIsAp(bool pIsAp);
+		
 
     private:
         bool changed = false;
@@ -130,6 +137,9 @@ class Settings {
         bool hidden        = false;
         bool captivePortal = true;
         String lang        = "en";
+		String toSSid = "test";
+		String toPassword = "test";
+		bool isAp = true;
 
         String FILE_PATH = "/settings.json";
 

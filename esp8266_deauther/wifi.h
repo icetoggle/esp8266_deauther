@@ -71,6 +71,10 @@ bool   wifi_config_captivePortal = false;
 String wifi_config_ssid;
 String wifi_config_password;
 String wifi_config_path;
+String wifi_config_to_ssid;
+String wifi_config_to_password;
+
+void startWifi();
 
 void stopAP() {
     if (wifiMode == WIFI_MODE_AP) {
@@ -81,6 +85,9 @@ void stopAP() {
         prntln(W_STOPPED_AP);
         wifiMode = WIFI_MODE_STATION;
     }
+}
+
+void stopSt() {
     if (wifiMode == WIFI_MODE_ST) {
         wifi_promiscuous_enable(0);
         WiFi.persistent(false);
@@ -89,7 +96,20 @@ void stopAP() {
         prntln(W_STOPPED_AP);
         wifiMode = WIFI_MODE_STATION;
     }
+
 }
+
+void stopWifi() {
+	if (settings.getIsAp())
+	{
+		stopAP();
+	}
+	else
+	{
+		stopSt();
+	}
+}
+
 
 void wifiUpdate() {
     if ((wifiMode != WIFI_MODE_OFF) && !scan.isScanning()) {
@@ -114,7 +134,10 @@ String getWifiMode() {
         return W_MODE_ST;
 
         break;
-
+    case WIFI_MODE_ST:
+        return W_MODE_WST;
+        
+        break;
     default:
         return String();
     }
@@ -341,23 +364,32 @@ void startSt(String path, String ssid, String password)
 	if (password == String(ZERO)) password = String(NEWLINE);
 
 	wifi_config_path = path;
-	wifi_config_ssid = ssid;
-	wifi_config_password = password;
+	wifi_config_to_ssid = ssid;
+	wifi_config_to_password = password;
 
 	WiFi.begin(ssid, password);
 	int wifi_ctr = 0;
-	while (WiFi.status() != WL_CONNECTED) {
+	int t = 20;
+	while (WiFi.status() != WL_CONNECTED && --t) {
 		delay(500);
 		prnt(".");
 	}
-  prnt("sucess connected");
-  prntln(WiFi.localIP());
-  apIP = WiFi.localIP();
+	if(t <= 0)
+    {
+		prntln("failed to connected and try create Ap");
+		settings.setIsAp(true);
+		settings.save(true);
+		startWifi();
+		return;
+	}
+	prnt("sucess connected");
+	prntln(WiFi.localIP());
+	apIP = WiFi.localIP();
 
-  startServer();
-  wifiMode = WIFI_MODE_ST;
-  prntln(W_STARTED_AP);
-  printWifiStatus();
+	startServer();
+	wifiMode = WIFI_MODE_ST;
+	prntln(W_STARTED_AP);
+	printWifiStatus();
 }
 
 
@@ -410,6 +442,10 @@ void printWifiStatus() {
     case WIFI_MODE_STATION:
         prnt(W_STATION);
         break;
+	
+	case WIFI_MODE_ST:
+		prnt(W_WSTATION);
+		break;
     }
     prnt(String(F("', SSID: '")));
     prnt(wifi_config_ssid);
@@ -423,15 +459,29 @@ void printWifiStatus() {
     prntln(b2s(wifi_config_captivePortal));
 }
 
+
+
 void startAP() {
     startAP(wifi_config_path.c_str(), wifi_config_ssid.c_str(),
             wifi_config_password.c_str(), wifi_channel, wifi_config_hidden, wifi_config_captivePortal);
 }
 
 void startSt() {
-  startSt(wifi_config_path.c_str(), wifi_config_ssid.c_str(),
-            wifi_config_password.c_str());
+  startSt(wifi_config_path.c_str(), wifi_config_to_ssid.c_str(),
+            wifi_config_to_password.c_str());
 }
+
+void startWifi() {
+	if (settings.getIsAp())
+	{
+		startAP();
+	}
+	else
+	{
+		startSt();
+	}
+}
+
 
 void startAP(String path) {
     wifi_config_path = path;
@@ -444,28 +494,46 @@ void loadWifiConfigDefaults() {
     wifi_config_password      = settings.getPassword();
     wifi_config_captivePortal = settings.getCaptivePortal();
     wifi_config_path          = str(W_WEBINTERFACE);
+	wifi_config_to_ssid		  = settings.getToSSid();
+	wifi_config_to_password	  = settings.getToPassword();
 }
 
 void resumeAP() {
-//    if (wifiMode != WIFI_MODE_AP) {
-//        wifiMode = WIFI_MODE_AP;
-//        wifi_promiscuous_enable(0);
-//        WiFi.softAPConfig(apIP, apIP, netMsk);
-//        WiFi.softAP(wifi_config_ssid.c_str(), wifi_config_password.c_str(), wifi_channel, wifi_config_hidden);
-//        prntln(W_STARTED_AP);
-//    } 
-    if(wifiMode != WIFI_MODE_ST) {
-          WiFi.begin(wifi_config_ssid.c_str(), wifi_config_password.c_str());
-          int wifi_ctr = 0;
-          while (WiFi.status() != WL_CONNECTED) {
-            delay(500);
-            prnt(".");
-          }
-          prnt("sucess connected");
-          prntln(WiFi.localIP());
-          apIP = WiFi.localIP();
-          wifiMode = WIFI_MODE_ST;
-    }
+	if (wifiMode != WIFI_MODE_AP) {
+		wifiMode = WIFI_MODE_AP;
+		wifi_promiscuous_enable(0);
+		WiFi.softAPConfig(apIP, apIP, netMsk);
+		WiFi.softAP(wifi_config_ssid.c_str(), wifi_config_password.c_str(), wifi_channel, wifi_config_hidden);
+		prntln(W_STARTED_AP);
+	}
+}
+
+void resumeSt() {
+	if (wifiMode != WIFI_MODE_ST) {
+		WiFi.begin(wifi_config_to_ssid.c_str(), wifi_config_to_password.c_str());
+		int wifi_ctr = 0;
+		while (WiFi.status() != WL_CONNECTED) {
+			delay(500);
+			prnt(".");
+		}
+		prntln();
+		prnt("sucess connected");
+		prntln(WiFi.localIP());
+		apIP = WiFi.localIP();
+		wifiMode = WIFI_MODE_ST;
+	}
+}
+
+void resumeWifi() {
+	if (settings.getIsAp())
+	{
+		resumeAP();
+	}
+	else
+	{
+		resumeSt();
+	}
+
 }
 
 #endif // ifndef WifiManager_h

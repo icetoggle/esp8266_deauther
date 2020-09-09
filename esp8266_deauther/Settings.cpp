@@ -23,6 +23,9 @@ void Settings::load() {
     if (data.containsKey(keyword(S_CHANNEL))) setChannel(data.get<uint8_t>(keyword(S_CHANNEL)));
     if (data.containsKey(keyword(S_HIDDEN))) setHidden(data.get<bool>(keyword(S_HIDDEN)));
     if (data.containsKey(keyword(S_CAPTIVEPORTAL))) setCaptivePortal(data.get<bool>(keyword(S_CAPTIVEPORTAL)));
+	if (data.containsKey(keyword(S_TOSSID))) setToSSid(data.get<String>(keyword(S_TOSSID)));
+	if (data.containsKey(keyword(S_TOPASSWORD))) setToPassword(data.get<String>(keyword(S_TOPASSWORD)));
+	if (data.containsKey(keyword(S_ISAP))) setIsAp(data.get<bool>(keyword(S_ISAP)));
 
     // GENERAL
     if (data.containsKey(keyword(S_LANG))) setLang(data.get<String>(keyword(S_LANG)));
@@ -59,6 +62,8 @@ void Settings::load() {
         changed = true;
     }
 
+    prnt("Is AP:");
+    prntln(getIsAp());
     prnt(S_SETTINGS_LOADED);
     prntln(FILE_PATH);
 
@@ -133,6 +138,10 @@ String Settings::getJsonStr() {
     data.set(keyword(S_CHANNEL), channel);
     data.set(keyword(S_HIDDEN), hidden);
     data.set(keyword(S_CAPTIVEPORTAL), captivePortal);
+
+	data.set(keyword(S_TOSSID), toSSid);
+	data.set(keyword(S_TOPASSWORD), toPassword);
+	data.set(keyword(S_ISAP), isAp);
 
     // GENERAL
     data.set(keyword(S_LANG), lang);
@@ -215,6 +224,7 @@ void Settings::set(const char* str, String value) {
     else if (eqls(str, S_CAPTIVEPORTAL)) setCaptivePortal(s2b(value));
     else if (eqls(str, S_SERIAL_ECHO)) setSerialEcho(s2b(value));
     else if (eqls(str, S_WEB_SPIFFS)) setWebSpiffs(s2b(value));
+	else if (eqls(str, S_ISAP)) setIsAp(s2b(value));
 
     // integer
     else if (eqls(str, S_FORCEPACKETS)) setForcePackets(value.toInt());
@@ -238,8 +248,10 @@ void Settings::set(const char* str, String value) {
         setMacSt(value);
         setMacAP(value);
     }
-
     else if (eqls(str, S_VERSION)) prntln(S_ERROR_VERSION);
+	else if (eqls(str, S_TOSSID)) setToSSid(value);
+	else if (eqls(str, S_TOPASSWORD)) setToPassword(value);
+
 
     else {
         prnt(S_ERROR_NOT_FOUND);
@@ -266,6 +278,7 @@ String Settings::get(const char* str) {
     else if (eqls(str, S_CAPTIVEPORTAL)) return b2s(captivePortal);
     else if (eqls(str, S_SERIAL_ECHO)) return b2s(serialEcho);
     else if (eqls(str, S_WEB_SPIFFS)) return b2s(webSpiffs);
+	else if (eqls(str, S_ISAP)) return b2s(isAp);
 
     // integer
     else if (eqls(str, S_FORCEPACKETS)) return (String)forcePackets;
@@ -287,6 +300,8 @@ String Settings::get(const char* str) {
     else if (eqls(str, S_MACST)) return macToStr(getMacSt());
     else if (eqls(str, S_MAC)) return "AP: " + macToStr(macAP) + ", Station: " + macToStr(macSt);
     else if (eqls(str, S_VERSION)) return version;
+	else if (eqls(str, S_TOSSID)) return toSSid;
+	else if (eqls(str, S_TOPASSWORD)) return toPassword;
 
     else {
         prnt(S_ERROR_NOT_FOUND);
@@ -407,6 +422,22 @@ bool Settings::getSerialEcho() {
 
 bool Settings::getWebSpiffs() {
     return webSpiffs;
+}
+
+String Settings::getToSSid()
+{
+	return toSSid;
+}
+
+String Settings::getToPassword()
+{
+	return toPassword;
+}
+
+
+bool Settings::getIsAp()
+{
+	return isAp;
 }
 
 // ===== SETTERS ===== //
@@ -611,4 +642,22 @@ void Settings::setWebSpiffs(bool webSpiffs) {
     Settings::webSpiffs = webSpiffs;
 
     changed = true;
+}
+
+void Settings::setToSSid(String pssid)
+{
+	toSSid = pssid;
+	changed = true;
+}
+
+void Settings::setToPassword(String pPassword)
+{
+	toPassword = pPassword;
+	changed = true;
+}
+
+void Settings::setIsAp(bool pIsAp)
+{
+	isAp = pIsAp;
+	changed = true;
 }

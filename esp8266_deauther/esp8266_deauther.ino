@@ -138,7 +138,7 @@ void setup() {
     }
 
     // start access point/web interface
-    if (settings.getWebInterface()) startSt();
+    if (settings.getWebInterface()) startWifi();
 
     // STARTED
     prntln(SETUP_STARTED);

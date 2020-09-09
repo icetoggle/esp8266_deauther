@@ -32,6 +32,8 @@ extern bool writeFile(String path, String& buf);
 extern void readFileToSerial(const String path);
 extern void resumeAP();
 extern void stopAP();
+extern void stopWifi();
+extern void resumeWifi();
 extern String escape(String str);
 
 class Scan {

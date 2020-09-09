@@ -46,6 +46,7 @@ extern bool equalsKeyword(const char* str, const char* keyword);
 extern void printWifiStatus();
 extern void startAP(String path, String ssid, String password, uint8_t ch, bool hidden, bool captivePortal);
 extern void wifiUpdate();
+extern void stopWifi();
 
 class CLI {
     public:
