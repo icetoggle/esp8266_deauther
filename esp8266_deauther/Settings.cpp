@@ -1,4 +1,5 @@
 #include "Settings.h"
+#include <ESP8266WiFi.h>
 
 Settings::Settings() {
     macSt = (uint8_t*)malloc(6);
@@ -26,6 +27,8 @@ void Settings::load() {
 	if (data.containsKey(keyword(S_TOSSID))) setToSSid(data.get<String>(keyword(S_TOSSID)));
 	if (data.containsKey(keyword(S_TOPASSWORD))) setToPassword(data.get<String>(keyword(S_TOPASSWORD)));
 	if (data.containsKey(keyword(S_ISAP))) setIsAp(data.get<bool>(keyword(S_ISAP)));
+	if (data.containsKey(keyword(S_WEB_USER))) setWebUser(data.get<String>(keyword(S_WEB_USER)));
+	if (data.containsKey(keyword(S_WEB_PASSWORD))) setWebPassword(data.get<String>(keyword(S_WEB_PASSWORD)));
 
     // GENERAL
     if (data.containsKey(keyword(S_LANG))) setLang(data.get<String>(keyword(S_LANG)));
@@ -62,8 +65,6 @@ void Settings::load() {
         changed = true;
     }
 
-    prnt("Is AP:");
-    prntln(getIsAp());
     prnt(S_SETTINGS_LOADED);
     prntln(FILE_PATH);
 
@@ -142,6 +143,8 @@ String Settings::getJsonStr() {
 	data.set(keyword(S_TOSSID), toSSid);
 	data.set(keyword(S_TOPASSWORD), toPassword);
 	data.set(keyword(S_ISAP), isAp);
+	data.set(keyword(S_WEB_USER), webUser);
+	data.set(keyword(S_WEB_PASSWORD), webPassword);
 
     // GENERAL
     data.set(keyword(S_LANG), lang);
@@ -225,6 +228,7 @@ void Settings::set(const char* str, String value) {
     else if (eqls(str, S_SERIAL_ECHO)) setSerialEcho(s2b(value));
     else if (eqls(str, S_WEB_SPIFFS)) setWebSpiffs(s2b(value));
 	else if (eqls(str, S_ISAP)) setIsAp(s2b(value));
+	
 
     // integer
     else if (eqls(str, S_FORCEPACKETS)) setForcePackets(value.toInt());
@@ -251,6 +255,8 @@ void Settings::set(const char* str, String value) {
     else if (eqls(str, S_VERSION)) prntln(S_ERROR_VERSION);
 	else if (eqls(str, S_TOSSID)) setToSSid(value);
 	else if (eqls(str, S_TOPASSWORD)) setToPassword(value);
+	else if (eqls(str, S_WEB_USER)) setWebUser(value);
+	else if (eqls(str, S_WEB_PASSWORD)) setWebPassword(value);
 
 
     else {
@@ -302,7 +308,9 @@ String Settings::get(const char* str) {
     else if (eqls(str, S_VERSION)) return version;
 	else if (eqls(str, S_TOSSID)) return toSSid;
 	else if (eqls(str, S_TOPASSWORD)) return toPassword;
-
+	else if (eqls(str, S_WEB_USER)) return webUser;
+	else if (eqls(str, S_WEB_PASSWORD)) return webPassword;
+	else if (eqls(str, S_LOCAL_IP)) return WiFi.localIP().toString();
     else {
         prnt(S_ERROR_NOT_FOUND);
         prntln(str);
@@ -438,6 +446,16 @@ String Settings::getToPassword()
 bool Settings::getIsAp()
 {
 	return isAp;
+}
+
+String Settings::getWebUser()
+{
+	return webUser;
+}
+
+String Settings::getWebPassword()
+{
+	return webPassword;
 }
 
 // ===== SETTERS ===== //
@@ -659,5 +677,17 @@ void Settings::setToPassword(String pPassword)
 void Settings::setIsAp(bool pIsAp)
 {
 	isAp = pIsAp;
+	changed = true;
+}
+
+void Settings::setWebUser(String pWebUser)
+{
+	webUser = pWebUser;
+	changed = true;
+}
+
+void Settings::setWebPassword(String pWebPassword)
+{
+	webPassword = pWebPassword;
 	changed = true;
 }

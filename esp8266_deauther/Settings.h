@@ -68,6 +68,8 @@ class Settings {
 		String getToSSid();
 		String getToPassword();
 		bool getIsAp();
+		String getWebUser();
+		String getWebPassword();
 
         void setDeauthsPerTarget(uint16_t deauthsPerTarget);
         void setDeauthReason(uint8_t deauthReason);
@@ -101,6 +103,8 @@ class Settings {
 		void setToSSid(String pssid);
 		void setToPassword(String pPassword);
 		void setIsAp(bool pIsAp);
+		void setWebUser(String pWebUser);
+		void setWebPassword(String pWebPassword);
 		
 
     private:
@@ -140,6 +144,8 @@ class Settings {
 		String toSSid = "test";
 		String toPassword = "test";
 		bool isAp = true;
+		String webUser = "ice";
+		String webPassword = "123456";
 
         String FILE_PATH = "/settings.json";
 

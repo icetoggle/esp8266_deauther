@@ -449,6 +449,9 @@ const char S_WEB_SPIFFS[] PROGMEM = "webSpiffs";
 const char S_TOSSID[] PROGMEM = "toSSid";
 const char S_TOPASSWORD[] PROGMEM = "toPassword";
 const char S_ISAP[] PROGMEM = "isAp";
+const char S_WEB_USER[] PROGMEM = "webUser";
+const char S_WEB_PASSWORD[] PROGMEM = "webPassword";
+const char S_LOCAL_IP[] PROGMEM = "localIp";
 
 const char S_SETTINGS_LOADED[] PROGMEM = "Settings loaded from ";
 const char S_SETTINGS_RESETED[] PROGMEM = "Settings reseted";

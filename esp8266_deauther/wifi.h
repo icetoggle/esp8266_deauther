@@ -223,6 +223,7 @@ void handleFileList() {
 }
 
 void sendProgmem(const char* ptr, size_t size, const char* type) {
+	if (!server.authenticate(settings.getWebUser().c_str(), settings.getWebPassword().c_str())) return server.requestAuthentication();
     server.sendHeader("Content-Encoding", "gzip");
     server.sendHeader("Cache-Control", "max-age=86400");
     server.send_P(200, str(type).c_str(), ptr, size);
