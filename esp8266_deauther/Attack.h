@@ -78,8 +78,13 @@ class Attack {
 
         void updateCounter();
 
+		void tryResume();
+
+		void tryPause();
+
         bool running = false;
         bool output  = true;
+		bool pause = false;
 
         struct AttackType {
             bool     active        = false; // if attack is activated
@@ -111,6 +116,8 @@ class Attack {
         uint32_t attackTime      = 0; // for counting how many packets per second
         uint32_t attackStartTime = 0;
         uint32_t timeout         = 0;
+		uint32_t pauseTime		 = 0;
+		uint32_t resumeTime		 = 0;
 
         // random mac address for making the beacon packets
         uint8_t mac[6] = { 0xAA, 0xBB, 0xCC, 0x00, 0x11, 0x22 };

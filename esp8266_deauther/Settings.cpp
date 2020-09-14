@@ -51,6 +51,8 @@ void Settings::load() {
     if (data.containsKey(keyword(S_FORCEPACKETS))) setForcePackets(data.get<uint8_t>(keyword(S_FORCEPACKETS)));
     if (data.containsKey(keyword(S_DEAUTHSPERTARGET))) setDeauthsPerTarget(data.get<uint16_t>(keyword(
                                                                                                   S_DEAUTHSPERTARGET)));
+	if (data.containsKey(keyword(S_ATTACK_DURATION))) setAttackDuration(data.get<uint32_t>(keyword(S_ATTACK_DURATION)));
+	if (data.containsKey(keyword(S_ATTACK_INTERVAL))) setAttackInterval(data.get<uint32_t>(keyword(S_ATTACK_INTERVAL)));
 
     if (data.containsKey(keyword(S_DEAUTHREASON))) setDeauthReason(data.get<uint8_t>(keyword(S_DEAUTHREASON)));
     if (data.containsKey(keyword(S_BEACONCHANNEL))) setBeaconChannel(data.get<bool>(keyword(S_BEACONCHANNEL)));
@@ -173,6 +175,8 @@ String Settings::getJsonStr() {
     data.set(keyword(S_BEACONINTERVAL), beaconInterval);
     data.set(keyword(S_RANDOMTX), randomTX);
     data.set(keyword(S_PROBESPERSSID), probesPerSSID);
+	data.set(keyword(S_ATTACK_DURATION), attackDuration);
+	data.set(keyword(S_ATTACK_INTERVAL), attackInterval);
 
     String buf;
     data.printTo(buf);
@@ -241,6 +245,8 @@ void Settings::set(const char* str, String value) {
     else if (eqls(str, S_PROBESPERSSID)) setProbesPerSSID(value.toInt());
     else if (eqls(str, S_MIN_DEAUTHS)) setMinDeauths(value.toInt());
     else if (eqls(str, S_DISPLAY_TIMEOUT)) setDisplayTimeout(value.toInt());
+	else if (eqls(str, S_ATTACK_DURATION)) setAttackDuration(value.toInt());
+	else if (eqls(str, S_ATTACK_INTERVAL)) setAttackInterval(value.toInt());
 
     // strings
     else if (eqls(str, S_LANG)) setLang(value);
@@ -297,6 +303,8 @@ String Settings::get(const char* str) {
     else if (eqls(str, S_PROBESPERSSID)) return (String)probesPerSSID;
     else if (eqls(str, S_MIN_DEAUTHS)) return (String)minDeauths;
     else if (eqls(str, S_DISPLAY_TIMEOUT)) return (String)displayTimeout;
+	else if (eqls(str, S_ATTACK_DURATION)) return (String)attackDuration;
+	else if (eqls(str, S_ATTACK_INTERVAL)) return (String)attackInterval;
 
     // strings
     else if (eqls(str, S_SSID)) return ssid;
@@ -456,6 +464,20 @@ String Settings::getWebUser()
 String Settings::getWebPassword()
 {
 	return webPassword;
+}
+
+uint32_t Settings::getAttackDuration()
+{
+	return attackDuration;
+}
+
+uint32_t Settings::getAttackInterval()
+{
+	if (attackInterval == 0)
+	{
+		return attackDuration;
+	}
+	return attackInterval;
 }
 
 // ===== SETTERS ===== //
@@ -689,5 +711,17 @@ void Settings::setWebUser(String pWebUser)
 void Settings::setWebPassword(String pWebPassword)
 {
 	webPassword = pWebPassword;
+	changed = true;
+}
+
+void Settings::setAttackDuration(uint32_t pattackDuration)
+{
+	attackDuration = pattackDuration;
+	changed = true;
+}
+
+void Settings::setAttackInterval(uint32_t pattackInterval)
+{
+	attackInterval = pattackInterval;
 	changed = true;
 }

@@ -70,6 +70,8 @@ class Settings {
 		bool getIsAp();
 		String getWebUser();
 		String getWebPassword();
+		uint32_t getAttackDuration();
+		uint32_t getAttackInterval();
 
         void setDeauthsPerTarget(uint16_t deauthsPerTarget);
         void setDeauthReason(uint8_t deauthReason);
@@ -105,6 +107,8 @@ class Settings {
 		void setIsAp(bool pIsAp);
 		void setWebUser(String pWebUser);
 		void setWebPassword(String pWebPassword);
+		void setAttackDuration(uint32_t pattackDuration);
+		void setAttackInterval(uint32_t pattackInterval);
 		
 
     private:
@@ -146,6 +150,9 @@ class Settings {
 		bool isAp = true;
 		String webUser = "ice";
 		String webPassword = "123456";
+		
+		uint32_t attackDuration = 600;
+		uint32_t attackInterval = 6000;
 
         String FILE_PATH = "/settings.json";
 

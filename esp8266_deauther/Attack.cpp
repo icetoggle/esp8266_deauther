@@ -23,9 +23,14 @@ void Attack::start() {
     prntln(A_START);
     attackTime      = currentTime;
     attackStartTime = currentTime;
+	if (settings.getAttackDuration())
+	{
+		pauseTime = currentTime + random(settings.getAttackDuration() * 1000, (long)(settings.getAttackDuration() * 1.5) * 1000);
+	}
     accesspoints.sortAfterChannel();
     stations.sortAfterChannel();
     running = true;
+	pause = false;
 }
 
 void Attack::start(bool beacon, bool deauth, bool deauthAll, bool probe, bool output, uint32_t timeout) {
@@ -65,6 +70,9 @@ void Attack::stop() {
         deauth.tc            = 0;
         beacon.tc            = 0;
         probe.tc             = 0;
+		pause = false;
+		pauseTime = 0;
+		resumeTime = 0;
         prntln(A_STOP);
     }
 }
@@ -80,6 +88,8 @@ void Attack::updateCounter() {
         stop();
         return;
     }
+
+	tryPause();
 
     // deauth packets per second
     if (deauth.active) {
@@ -122,6 +132,44 @@ void Attack::updateCounter() {
     tmpPacketRate        = 0;
 }
 
+void Attack::tryResume()
+{
+	if (!settings.getAttackDuration())
+	{
+		return;
+	}
+	if (pause && resumeTime && currentTime >= resumeTime)
+	{
+		pause = false;
+		resumeTime = 0;
+		pauseTime = currentTime + random(settings.getAttackDuration() * 1000, (long)(settings.getAttackDuration() * 1.5) * 1000);
+		prnt("resume attack :");
+		prnt(currentTime);
+		prnt(":");
+		prntln(pauseTime);
+	}
+}
+
+
+
+void Attack::tryPause()
+{
+	if (!settings.getAttackDuration())
+	{
+		return;
+	}
+	if (!pause && pauseTime && currentTime >= pauseTime)
+	{
+		pause = true;
+		pauseTime = 0;
+		resumeTime = currentTime + random(settings.getAttackInterval() * 1000, (long)(settings.getAttackInterval() * 1.5) * 1000);
+		prnt("parse attack :");
+		prnt(currentTime);
+		prnt(":");
+		prntln(resumeTime);
+	}
+}
+
 void Attack::status() {
     char s[120];
 
@@ -148,6 +196,10 @@ String Attack::getStatusJSON() {
 
 void Attack::update() {
     if (!running || scan.isScanning()) return;
+
+	tryResume();
+
+	if (pause) return;
 
     apCount = accesspoints.count();
     stCount = stations.count();
