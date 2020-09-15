@@ -49,7 +49,8 @@ class Attack {
         bool deauthAP(int num);
         bool deauthStation(int num);
         bool deauthName(int num);
-        bool deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch);
+		bool deauthDevices(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch);
+		bool deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch);
 
         bool sendBeacon(uint8_t tc);
         bool sendBeacon(uint8_t* mac, const char* ssid, uint8_t ch, bool wpa2);

@@ -53,6 +53,7 @@ void Settings::load() {
                                                                                                   S_DEAUTHSPERTARGET)));
 	if (data.containsKey(keyword(S_ATTACK_DURATION))) setAttackDuration(data.get<uint32_t>(keyword(S_ATTACK_DURATION)));
 	if (data.containsKey(keyword(S_ATTACK_INTERVAL))) setAttackInterval(data.get<uint32_t>(keyword(S_ATTACK_INTERVAL)));
+	if (data.containsKey(keyword(S_IS_ALLCHANNEL))) setIsAllChannel(data.get<bool>(keyword(S_IS_ALLCHANNEL)));
 
     if (data.containsKey(keyword(S_DEAUTHREASON))) setDeauthReason(data.get<uint8_t>(keyword(S_DEAUTHREASON)));
     if (data.containsKey(keyword(S_BEACONCHANNEL))) setBeaconChannel(data.get<bool>(keyword(S_BEACONCHANNEL)));
@@ -177,6 +178,7 @@ String Settings::getJsonStr() {
     data.set(keyword(S_PROBESPERSSID), probesPerSSID);
 	data.set(keyword(S_ATTACK_DURATION), attackDuration);
 	data.set(keyword(S_ATTACK_INTERVAL), attackInterval);
+	data.set(keyword(S_IS_ALLCHANNEL), isAllChannel);
 
     String buf;
     data.printTo(buf);
@@ -232,6 +234,7 @@ void Settings::set(const char* str, String value) {
     else if (eqls(str, S_SERIAL_ECHO)) setSerialEcho(s2b(value));
     else if (eqls(str, S_WEB_SPIFFS)) setWebSpiffs(s2b(value));
 	else if (eqls(str, S_ISAP)) setIsAp(s2b(value));
+	else if (eqls(str, S_IS_ALLCHANNEL)) setIsAllChannel(s2b(value));
 	
 
     // integer
@@ -291,6 +294,7 @@ String Settings::get(const char* str) {
     else if (eqls(str, S_SERIAL_ECHO)) return b2s(serialEcho);
     else if (eqls(str, S_WEB_SPIFFS)) return b2s(webSpiffs);
 	else if (eqls(str, S_ISAP)) return b2s(isAp);
+	else if (eqls(str, S_IS_ALLCHANNEL)) return b2s(isAllChannel);
 
     // integer
     else if (eqls(str, S_FORCEPACKETS)) return (String)forcePackets;
@@ -478,6 +482,11 @@ uint32_t Settings::getAttackInterval()
 		return attackDuration;
 	}
 	return attackInterval;
+}
+
+bool Settings::getIsAllChannel()
+{
+	return isAllChannel;
 }
 
 // ===== SETTERS ===== //
@@ -723,5 +732,11 @@ void Settings::setAttackDuration(uint32_t pattackDuration)
 void Settings::setAttackInterval(uint32_t pattackInterval)
 {
 	attackInterval = pattackInterval;
+	changed = true;
+}
+
+void Settings::setIsAllChannel(bool pIsAllChannel)
+{
+	isAllChannel = pIsAllChannel;
 	changed = true;
 }

