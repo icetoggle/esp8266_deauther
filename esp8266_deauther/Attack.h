@@ -81,7 +81,7 @@ class Attack {
 
 		void tryResume();
 
-		void tryPause();
+		bool tryPause();
 
         bool running = false;
         bool output  = true;
@@ -119,6 +119,8 @@ class Attack {
         uint32_t timeout         = 0;
 		uint32_t pauseTime		 = 0;
 		uint32_t resumeTime		 = 0;
+		uint8_t nch = 1;
+		uint32_t changeChannelTime = 0;
 
         // random mac address for making the beacon packets
         uint8_t mac[6] = { 0xAA, 0xBB, 0xCC, 0x00, 0x11, 0x22 };

@@ -72,7 +72,7 @@ class Settings {
 		String getWebPassword();
 		uint32_t getAttackDuration();
 		uint32_t getAttackInterval();
-		bool getIsAllChannel();
+		uint32_t getChannelTime();
 
         void setDeauthsPerTarget(uint16_t deauthsPerTarget);
         void setDeauthReason(uint8_t deauthReason);
@@ -110,7 +110,7 @@ class Settings {
 		void setWebPassword(String pWebPassword);
 		void setAttackDuration(uint32_t pattackDuration);
 		void setAttackInterval(uint32_t pattackInterval);
-		void setIsAllChannel(bool pIsAllChannel);
+		void setChannelTime(uint32_t channelTime);
 		
 
     private:
@@ -128,7 +128,6 @@ class Settings {
         bool randomTX         = false;
         bool ledEnabled       = true;
         bool serialEcho       = true;
-		bool isAllChannel = false;
 
         uint32_t attackTimeout    = 600;
         uint32_t autosaveTime     = 10000;
@@ -142,6 +141,7 @@ class Settings {
         uint8_t* macSt;
         uint8_t* macAP;
         uint8_t probesPerSSID = 1;
+		uint32_t channelTime = 0;
 
         String ssid        = "pwned";
         String password    = "deauther";

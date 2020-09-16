@@ -454,7 +454,7 @@ const char S_WEB_PASSWORD[] PROGMEM = "webPassword";
 const char S_LOCAL_IP[] PROGMEM = "localIp";
 const char S_ATTACK_DURATION[] PROGMEM = "attackDuration";
 const char S_ATTACK_INTERVAL[] PROGMEM = "attackInterval";
-const char S_IS_ALLCHANNEL[] PROGMEM = "isAllChannel";
+const char S_CHANNEL_TIME[] PROGMEM = "channelTime";
 
 
 const char S_SETTINGS_LOADED[] PROGMEM = "Settings loaded from ";
