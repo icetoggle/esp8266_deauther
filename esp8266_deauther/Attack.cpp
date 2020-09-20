@@ -25,7 +25,7 @@ void Attack::start() {
     attackStartTime = currentTime;
 	resumeTime = 0;
 	changeChannelTime = 0;
-	if (settings.getAttackDuration())
+	if (timeout == 0 && settings.getAttackDuration())
 	{
 		pauseTime = currentTime + random(settings.getAttackDuration() * 1000, (long)(settings.getAttackDuration() * 1.5) * 1000);
 		prntln("Init Pause Time:");
@@ -144,6 +144,10 @@ void Attack::updateCounter() {
 
 void Attack::tryResume()
 {
+  if(timeout > 0)
+  {
+    return;
+  }
 	if (!settings.getAttackDuration())
 	{
 		return;
@@ -164,6 +168,10 @@ void Attack::tryResume()
 
 bool Attack::tryPause()
 {
+  if (timeout > 0)
+  {
+    return false;
+  }
 	if (!settings.getAttackDuration())
 	{
 		return false;
